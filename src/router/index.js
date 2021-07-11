@@ -10,13 +10,18 @@ const router = new VueRouter({
         {
           path: "/user",
           name: "user",
-          component: () => import("../components/User")
+          component: () => import("../views/User")
         },
         {
           path: "/",
           name: "search",
-          component: () => import("../components/Search")
-        }
+          component: () => import("../views/Search")
+        },
+        {
+          path: "/recent",
+          name: "recent",
+          component: () => import("../views/RecentSearches")
+        },
       ],
 
 })

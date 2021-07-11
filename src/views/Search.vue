@@ -5,58 +5,44 @@
           <input
             class="form-control me-2"
             type="search"
-            placeholder="Procure por um usuário"
+            placeholder="Search for users"
             aria-label="Search"
             v-model="searchName"
             @keypress.enter="fetchGivenUser()"
           />
+          <button @click="$router.push({name: 'recent'})" class="btn-success">Recent searches</button>
       </div>
     </nav>
-
-    <div class="container">
-      <div class="row">
-        <div class="col-4" v-for="(item, index) in ListedUsers" :key="index">
-          <router-link class="redirect" :to="{name: 'user', params: item}">
-            <div class="avatar-card">
-              <img class="avatar" :src="item.avatar_url" />
-              <h2>{{ item.type }}</h2>
-            </div>
-          </router-link>
-        </div>
-      </div>
-    </div>
+    <Card :list="displayedList"/>
   </section>
 </template>
 
 <script>
 import { allUsers, fetchUsers } from "../services/index";
+import Card from '../components/UserCard.vue'
 
 export default {
+  components: {
+    Card
+  },
   data() {
     return {
       usersList: [],
       searchName: "",
       page: 0,
       searchedList: [],
-      searchedPage: 0
+      searchedPage: 0,
+      displayedList: [],
+      previousSearches: []
     };
   },
 
-  computed: {
-    ListedUsers(){
-      var newArray = []
-      console.log(this.searchName);
-      if(!this.searchName){
-        newArray = this.usersList
-      }else{
-        newArray = this.searchedList
-      }
-      return newArray;
-    }
-  },
-
-  created() {
+  mounted() {
     this.findUsers();
+    this.searchName = this.$route.params.item
+    if(this.searchName){
+      this.fetchGivenUser(this.searchName)
+    }
   },
 
   methods: {
@@ -64,50 +50,33 @@ export default {
       allUsers(this.page)
       .then((resp) => {
         this.usersList = resp.data;
+        this.displayedList = resp.data;
       });
     },
 
     fetchGivenUser(){
+     this.$store.commit("SET_SEARCHED_USER", this.searchName);
       fetchUsers(this.searchName, this.searchedPage)
        .then((resp) => {
         this.searchedList = resp.data.items;
+        this.displayedList = resp.data.items;
       });
     }
   },
+
+  watch:{
+    searchName(newValue){
+      if(newValue){
+        this.displayedList = this.searchedList
+      }else{
+        this.displayedList = this.usersList
+      }
+    }
+  }
 };
 </script>
 
 <style scoped>
-.avatar {
-  max-width: 75%;
-  border-radius: 50%;
-  margin-top: 20px;
-}
-
-.redirect {
-  text-decoration: none;
-  color: #fff;
-  margin-bottom: 30px;
-}
-
-.avatar-card {
-  background-color: #282828;
-  width: 70%;
-  border-radius: 2%;
-  margin-bottom: 25px;
-}
-
-.avatar-card:hover {
-  background-color: #535353;
-  cursor: pointer;
-  transition: 700ms;
-}
-
-.avatar-card h2 {
-  padding-bottom: 20px;
-  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
-}
-
 .container-fluid{
   justify-content: center;
 }
@@ -129,5 +98,24 @@ export default {
 .form-control:focus{
   border: none !important;
   box-shadow: none;
+}
+
+.btn-success{
+  border-radius: 24px;
+  padding: 10px 28px;
+  margin-left: 20px;
+  border-color: #1DC95B;
+  background-color: #1DC95B;
+  border-style: none;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+}
+
+.btn-success:hover{
+  background-color: #1DB954;
+  transition: 300ms;
+}
+
+.btn-success:focus{
+  box-shadow: none !important;
 }
 </style>
