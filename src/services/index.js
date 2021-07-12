@@ -1,7 +1,7 @@
   
 import { Octokit } from "@octokit/core";
 
-const octokit = new Octokit({ auth: "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 "  });
+const octokit = new Octokit({ auth: "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"  });
 
 export const allUsers = (since) => octokit.request("GET /users", {
     since,
