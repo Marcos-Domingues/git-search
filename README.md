@@ -12,7 +12,7 @@ npm install
 npm run serve
 ```
 
-## github api's needs a personal access token
+## github api's require a personal access token
 ```
 https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token
 
